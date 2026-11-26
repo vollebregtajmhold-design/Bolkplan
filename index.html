@@ -884,6 +884,7 @@ tr:hover .ovmail{opacity:1}@media (hover:none),(max-width:700px){.ovmail{display
 .fbtkaart{width:150px;display:flex;flex-direction:column;gap:2px;cursor:pointer;background:#fff;border:1px solid #e6e0d4;border-radius:10px;padding:5px;font-size:12px}
 .fbtkaart:hover{border-color:var(--groen);box-shadow:0 2px 10px rgba(45,106,79,.25)}.fbtkaart b{font-size:13px;line-height:1.2}.fbtkaart span{color:#666}
 .fbtkaart .galfoto{width:100%;aspect-ratio:1;height:auto;min-height:0;padding:0;border-radius:7px;overflow:hidden;pointer-events:none}.fbtkaart .galfoto img{width:100%;height:100%;object-fit:cover}
+.fbtsel{outline:3px solid #f0a500!important;outline-offset:-3px;position:relative;z-index:3}.fbtkaart.fbtsel{outline-offset:1px}
 .fbtpijl{display:inline-block;width:16px;color:var(--groen)}
 @media (max-width:700px){.fbtrK{padding-left:16px}.fbtkaart{width:120px}}
 .galkop{margin:12px 0 6px;font-size:14px;color:#1f4d39}.galbalk{gap:6px;flex-wrap:wrap;align-items:center;margin:6px 0;padding:6px 0;position:sticky;top:-1px;background:#fff;z-index:2}
@@ -1069,7 +1070,7 @@ tr:hover .ovmail{opacity:1}@media (hover:none),(max-width:700px){.ovmail{display
 
 <script>
 "use strict";
-const VERSIE="55.7";
+const VERSIE="55.8";
 const VERSIE_DATUM="03-11-2026";
 /* ---------- Basis ---------- */
 const PALET=["#2d6a4f","#1B5EBE","#E8007D","#c77d1a","#7a4fa0","#0f8b8d","#5b6b2f","#3d5a80","#a0522d","#7AB648"];
@@ -5188,15 +5189,15 @@ function fbTabel(blijf){if(!isBeheerder()||!fotoMag())return;galOpen=0;if(!blijf
   const zf=(t,x)=>!q||q.split(/\s+/).every(w=>[fmN(x),x.b,x.fd,x.se,x.k,teeltLabel(t),(fmRas(x)||{}).naam].join(" ").toLowerCase().includes(w));
   const qa=v=>esc(String(v).replace(/\\/g,"\\\\").replace(/'/g,"\\'")),pijl=o=>`<span class="fbtpijl">${o?"▾":"▸"}</span>`,cmp=(a,b)=>(a===ZS||a===ZK)-(b===ZS||b===ZK)||a.localeCompare(b,"nl");
   /* foto-kaart: grote foto met naam, belading en FD-code eronder; klik = groot openen */
-  const kaart=(t,x)=>`<div class="fbtkaart" onclick="galOpen=1;fotoMapToon('${t.id}','${x.s}')" title="Klik: foto groot openen met alle gegevens"><button class="galfoto" data-gm="${t.id}" data-gs="${x.s}"></button>
+  const kaart=(t,x)=>`<div class="fbtkaart" data-k="c|${t.id}|${x.s}" onclick="fbtSel=this.dataset.k;galOpen=1;fotoMapToon('${t.id}','${x.s}')" title="Klik: foto groot openen met alle gegevens"><button class="galfoto" data-gm="${t.id}" data-gs="${x.s}"></button>
     <b>${esc(fmN(x)||(fmRas(x)||{}).naam||"–")}</b>${x.b?`<span>🛒 ${esc(x.b)}</span>`:""}${x.fd?`<span>🏷 ${esc(x.fd)}</span>`:""}</div>`;
   let h="",tot=0;
   for(const t of T){const A=fmapLijst(t.id).filter(x=>zf(t,x));if(!A.length&&zoek)continue;tot+=A.length;const kt="t|"+t.id,ot=zoek||fbtOpen.has(kt);
     const kn=(...a)=>`<span class="fbacties" onclick="event.stopPropagation()">${a.join("")}</span>`,up=(se,k)=>`<label class="ovk ovlink" style="cursor:pointer" title="Foto's toevoegen">➕ Foto's<input type="file" accept="image/*" multiple hidden onchange="fbUpload('${t.id}','${qa(se)}','${qa(k)}',this.files)"></label>`;
-    h+=`<div class="fbtrT" onclick="fbtKlap('${kt}')">${pijl(ot)} 🌱 <b>${esc(teeltLabel(t))}</b> <span class="status">(${A.length})</span>${kijker?"":kn(`<button class="ovk ovlink" onclick="fbNieuw('${t.id}')">➕ Serie</button>`)}</div>`;if(!ot)continue;
+    h+=`<div class="fbtrT" data-k="${esc(kt)}" onclick="fbtSel=this.dataset.k;fbtKlap('${kt}')">${pijl(ot)} 🌱 <b>${esc(teeltLabel(t))}</b> <span class="status">(${A.length})</span>${kijker?"":kn(`<button class="ovk ovlink" onclick="fbNieuw('${t.id}')">➕ Serie</button>`)}</div>`;if(!ot)continue;
     const B=zoek?{}:fbBoom(t.id);if(zoek)for(const x of A){const se=x.se||ZS,k=x.k||ZK;((B[se]=B[se]||{})[k]=B[se][k]||[]).push(x)}
     for(const se of Object.keys(B).sort(cmp)){const ks="s|"+t.id+"|"+se,os=zoek||fbtOpen.has(ks),K=Object.keys(B[se]).sort(cmp),ns=K.reduce((a,k)=>a+B[se][k].length,0);
-      h+=`<div class="fbtrS" onclick="fbtKlap('${qa(ks)}')">${pijl(os)} 📂 <b>${esc(se)}</b> <span class="status">(${ns} · ${K.length} kleur${K.length===1?"":"en"})</span>${kijker?"":kn(se!==ZS?`<button class="ovk ovlink" onclick="fbNieuw('${t.id}','${qa(se)}')">➕ Kleur</button><button class="ovk ovlink" title="Andere naam" onclick="fbHernoem('${t.id}','${qa(se)}')">✏</button><button class="ovk ovlink" title="Serie weghalen (foto's gaan naar ongesorteerd)" onclick="fbWegLeeg('${t.id}','${qa(se)}')">✕</button>`:up(ZS,ZK))}</div>`;if(!os)continue;
+      h+=`<div class="fbtrS" data-k="${esc(ks)}" onclick="fbtSel=this.dataset.k;fbtKlap('${qa(ks)}')">${pijl(os)} 📂 <b>${esc(se)}</b> <span class="status">(${ns} · ${K.length} kleur${K.length===1?"":"en"})</span>${kijker?"":kn(se!==ZS?`<button class="ovk ovlink" onclick="fbNieuw('${t.id}','${qa(se)}')">➕ Kleur</button><button class="ovk ovlink" title="Andere naam" onclick="fbHernoem('${t.id}','${qa(se)}')">✏</button><button class="ovk ovlink" title="Serie weghalen (foto's gaan naar ongesorteerd)" onclick="fbWegLeeg('${t.id}','${qa(se)}')">✕</button>`:up(ZS,ZK))}</div>`;if(!os)continue;
       /* alle kleuren van deze serie naast elkaar: per kleur een blokje met de foto's */
       h+=`<div class="fbtrK">${K.map(k=>{const L=B[se][k];return`<div class="fbtkgrp" ${kijker?"":`ondragover="event.preventDefault();this.classList.add('slepen')" ondragleave="this.classList.remove('slepen')" ondrop="this.classList.remove('slepen');event.preventDefault();if(event.dataTransfer.files.length)fbUpload('${t.id}','${qa(se)}','${qa(k)}',event.dataTransfer.files)"`}><div class="fbtkl">🎨 <b>${esc(k)}</b> <span class="status">${L.length}</span>
           ${kijker?"":`<span class="fbacties">${up(se,k)}${k!==ZK?`<button class="ovk ovlink" title="Andere naam" onclick="fbHernoem('${t.id}','${qa(se)}','${qa(k)}')">✏</button><button class="ovk ovlink" title="Kleur weghalen (foto's gaan naar ongesorteerd)" onclick="fbWegLeeg('${t.id}','${qa(se)}','${qa(k)}')">✕</button>`:""}</span>`}</div>
@@ -5207,13 +5208,32 @@ function fbTabel(blijf){if(!isBeheerder()||!fotoMag())return;galOpen=0;if(!blijf
       <input type="search" class="mwveld" style="margin:0 0 0 8px;flex:1;min-width:220px" placeholder="🔍 Zoek op naam, FD-code, serie, kleur of belading…" value="${esc(fzT)}" oninput="fzT=this.value;clearTimeout(window.fbZT);window.fbZT=setTimeout(()=>{fbTabel(true);const i=document.querySelector('#mobPop input[type=search]');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length)}},300)">
       ${fmMandItems().length?`<button class="btn klein" onclick="fmMailPop()">✉ Mail maken (${fmMandItems().length})</button>`:""}</div>
     ${h?`<div class="fbtwrap">${h}</div>`:`<p class="status" style="padding:12px 0">Geen foto's gevonden.</p>`}
-    <p class="status" style="font-size:12px;margin:6px 0 0">Klik op een <b>teelt</b>: de series verschijnen. Klik op een <b>serie</b>: alle kleuren met hun foto's verschijnen. Klik op een <b>foto</b>: groot openen met alle gegevens.</p>`);
+    <p class="status" style="font-size:12px;margin:6px 0 0">⌨ Ook met de pijltjes: ↑ ↓ ← → bewegen, → open, ← dicht, Enter = openen. Klik op een <b>teelt</b>: de series verschijnen. Klik op een <b>serie</b>: alle kleuren met hun foto's verschijnen. Klik op een <b>foto</b>: groot openen met alle gegevens.</p>`);
   /* breedte: minstens 4 foto's breed; zijn er in een serie meer foto's naast elkaar, dan breder (tot bijna schermbreed). Altijd in het midden */
   galIn=1;const m=document.querySelector("#mobPop .mpop");if(m){m.classList.add("breed");let w=0;const k1=document.querySelector("#mobPop .fbtkaart"),kw=k1?k1.offsetWidth:164;
     document.querySelectorAll("#mobPop .fbtrK").forEach(r=>{const G=[...r.querySelectorAll(".fbtkgrp")];const b=70+G.reduce((a,g)=>a+Math.max(1,g.querySelectorAll(".fbtkaart").length)*(kw+8)+14,0)+18*Math.max(0,G.length-1);if(b>w)w=b});
     const kaart4=70+4*(kw+8)+14+40;m.style.maxWidth="96vw";m.style.width=Math.round(Math.min(window.innerWidth*0.96,Math.max(kaart4,w+40)))+"px"}
   const io=new IntersectionObserver(es=>es.forEach(async e=>{if(!e.isIntersecting)return;io.unobserve(e.target);const b=e.target,u=await fmapLaad(b.dataset.gm,b.dataset.gs);if(u&&b.isConnected)b.insertAdjacentHTML("afterbegin",`<img src="${u}" alt="" loading="lazy">`)}),{rootMargin:"400px"});
-  document.querySelectorAll("#mobPop .fbtkaart .galfoto").forEach(b=>io.observe(b))}
+  document.querySelectorAll("#mobPop .fbtkaart .galfoto").forEach(b=>io.observe(b));
+  if(fbtSel){const el=[...document.querySelectorAll("#mobPop .fbtwrap [data-k]")].find(x=>x.dataset.k===fbtSel);if(el){el.classList.add("fbtsel");el.scrollIntoView({block:"nearest"})}}}
+/* ⌨ pijltjes in de fototabel: ↑ ↓ ← → bewegen, → / ← klappen open en dicht, Enter = openen */
+let fbtSel="";
+function fbtZet(el){document.querySelectorAll("#mobPop .fbtsel").forEach(x=>x.classList.remove("fbtsel"));if(!el)return;el.classList.add("fbtsel");fbtSel=el.dataset.k;el.scrollIntoView({block:"nearest"})}
+document.addEventListener("keydown",e=>{const P=document.getElementById("mobPop");if(!P||P.hidden||!P.querySelector(".fbtwrap"))return;
+  if(!["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Enter"," "].includes(e.key))return;const t=e.target;
+  if(t&&(t.tagName==="INPUT"||t.tagName==="TEXTAREA"||t.tagName==="SELECT")){if(!(t.type==="search"&&e.key==="ArrowDown"))return;t.blur()}
+  if(t&&t.tagName==="BUTTON"&&(e.key==="Enter"||e.key===" "))return;
+  const I=[...P.querySelectorAll(".fbtwrap [data-k]")];if(!I.length)return;e.preventDefault();
+  const cur=I.find(x=>x.dataset.k===fbtSel);if(!cur){fbtZet(I[0]);return}
+  const i=I.indexOf(cur),kaart=cur.classList.contains("fbtkaart"),k=cur.dataset.k,open=fzT.trim()||fbtOpen.has(k);
+  const verticaal=d=>{const r=cur.getBoundingClientRect(),cx=kaart?r.left+r.width/2:r.left+40;let best=null,bs=1e9;
+    for(const x of I){if(x===cur)continue;const q=x.getBoundingClientRect(),dy=d>0?q.top-r.top:r.top-q.top;if(dy<8)continue;
+      const qx=x.classList.contains("fbtkaart")?q.left+q.width/2:cx,sc=dy*4+Math.abs(qx-cx);if(sc<bs){bs=sc;best=x}}return best};
+  if(e.key==="ArrowDown")fbtZet(verticaal(1)||cur);
+  else if(e.key==="ArrowUp")fbtZet(verticaal(-1)||cur);
+  else if(e.key==="ArrowRight"){if(!kaart&&!open)fbtKlap(k);else fbtZet(I[i+1]||cur)}
+  else if(e.key==="ArrowLeft"){if(!kaart&&open&&!fzT.trim())fbtKlap(k);else if(kaart)fbtZet(I[i-1]||cur);else if(k.startsWith("s|")){const tk="t|"+k.split("|")[1];fbtZet(I.find(x=>x.dataset.k===tk)||cur)}}
+  else if(e.key==="Enter"||e.key===" "){cur.click()}},true);
 function fotoGalerij(tid){if(!isBeheerder()||!fotoMag())return;if(galTab&&tid==null&&!galKies){fbTabel(galOpen===1);return}galOpen=0;if(!wolkDoc){alert("Foto's werken alleen als u online bent ingelogd.");return}
   if(tid!=null)galTeelt=tid;const T=(data.teeltduren||[]).filter(t=>!galTeelt||t.id===galTeelt),zoek=!!fzT.trim(),open=key=>zoek||!galDicht.has(key)?"open":"";
   const q=v=>esc(String(v).replace(/\\/g,"\\\\").replace(/'/g,"\\'")),SE=new Set(),KL=new Set();
