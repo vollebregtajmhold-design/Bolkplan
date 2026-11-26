@@ -1069,7 +1069,7 @@ tr:hover .ovmail{opacity:1}@media (hover:none),(max-width:700px){.ovmail{display
 
 <script>
 "use strict";
-const VERSIE="55.6";
+const VERSIE="55.7";
 const VERSIE_DATUM="03-11-2026";
 /* ---------- Basis ---------- */
 const PALET=["#2d6a4f","#1B5EBE","#E8007D","#c77d1a","#7a4fa0","#0f8b8d","#5b6b2f","#3d5a80","#a0522d","#7AB648"];
@@ -5208,7 +5208,10 @@ function fbTabel(blijf){if(!isBeheerder()||!fotoMag())return;galOpen=0;if(!blijf
       ${fmMandItems().length?`<button class="btn klein" onclick="fmMailPop()">✉ Mail maken (${fmMandItems().length})</button>`:""}</div>
     ${h?`<div class="fbtwrap">${h}</div>`:`<p class="status" style="padding:12px 0">Geen foto's gevonden.</p>`}
     <p class="status" style="font-size:12px;margin:6px 0 0">Klik op een <b>teelt</b>: de series verschijnen. Klik op een <b>serie</b>: alle kleuren met hun foto's verschijnen. Klik op een <b>foto</b>: groot openen met alle gegevens.</p>`);
-  galIn=1;const m=document.querySelector("#mobPop .mpop");if(m){m.classList.add("breed");m.style.maxWidth="96vw";m.style.width="96vw"}
+  /* breedte: minstens 4 foto's breed; zijn er in een serie meer foto's naast elkaar, dan breder (tot bijna schermbreed). Altijd in het midden */
+  galIn=1;const m=document.querySelector("#mobPop .mpop");if(m){m.classList.add("breed");let w=0;const k1=document.querySelector("#mobPop .fbtkaart"),kw=k1?k1.offsetWidth:164;
+    document.querySelectorAll("#mobPop .fbtrK").forEach(r=>{const G=[...r.querySelectorAll(".fbtkgrp")];const b=70+G.reduce((a,g)=>a+Math.max(1,g.querySelectorAll(".fbtkaart").length)*(kw+8)+14,0)+18*Math.max(0,G.length-1);if(b>w)w=b});
+    const kaart4=70+4*(kw+8)+14+40;m.style.maxWidth="96vw";m.style.width=Math.round(Math.min(window.innerWidth*0.96,Math.max(kaart4,w+40)))+"px"}
   const io=new IntersectionObserver(es=>es.forEach(async e=>{if(!e.isIntersecting)return;io.unobserve(e.target);const b=e.target,u=await fmapLaad(b.dataset.gm,b.dataset.gs);if(u&&b.isConnected)b.insertAdjacentHTML("afterbegin",`<img src="${u}" alt="" loading="lazy">`)}),{rootMargin:"400px"});
   document.querySelectorAll("#mobPop .fbtkaart .galfoto").forEach(b=>io.observe(b))}
 function fotoGalerij(tid){if(!isBeheerder()||!fotoMag())return;if(galTab&&tid==null&&!galKies){fbTabel(galOpen===1);return}galOpen=0;if(!wolkDoc){alert("Foto's werken alleen als u online bent ingelogd.");return}
