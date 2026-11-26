@@ -879,7 +879,7 @@ tr:hover .ovmail{opacity:1}@media (hover:none),(max-width:700px){.ovmail{display
 .fbtrT{padding:10px 12px;background:#e3f1e7;border-bottom:1px solid #d8d2c4;cursor:pointer;font-size:16px;position:sticky;top:0;z-index:2}.fbtrT:hover{background:#cfe6d8}
 .fbtrS{padding:8px 12px 8px 34px;background:#f3f8f5;border-bottom:1px solid #e6e0d4;cursor:pointer;font-size:15px}.fbtrS:hover{background:#dff0e6}
 .fbtrK{display:flex;flex-wrap:wrap;gap:14px 18px;align-items:flex-start;padding:10px 12px 12px 58px;border-bottom:1px solid #eee8dc}.fbtkgrp{display:flex;flex-direction:column;gap:5px;background:#f3f0e8;border-radius:10px;padding:6px}
-.fbtkl{font-size:14px;padding:0 2px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}.fbtkl .fbacties{margin-left:auto}.fbtkgrp.slepen{outline:3px dashed var(--groen)}.fbtrT,.fbtrS{display:flex;align-items:center;gap:6px}.fbtrT>.fbacties,.fbtrS>.fbacties{margin-left:auto}.fbtkl .status{font-size:12px}
+.fbtkl{font-size:14px;padding:0 2px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}.fbtkl .fbacties{margin-left:auto}.fbtkgrp.slepen{outline:3px dashed var(--groen)}.fbtrT,.fbtrS{display:flex;align-items:center;gap:6px}.fbtrT>.fbacties,.fbtrS>.fbacties{margin-left:14px}.fbtkl .status{font-size:12px}
 .fbtkaarten{display:flex;flex-wrap:wrap;gap:8px}
 .fbtkaart{width:150px;display:flex;flex-direction:column;gap:2px;cursor:pointer;background:#fff;border:1px solid #e6e0d4;border-radius:10px;padding:5px;font-size:12px}
 .fbtkaart:hover{border-color:var(--groen);box-shadow:0 2px 10px rgba(45,106,79,.25)}.fbtkaart b{font-size:13px;line-height:1.2}.fbtkaart span{color:#666}
@@ -1069,7 +1069,7 @@ tr:hover .ovmail{opacity:1}@media (hover:none),(max-width:700px){.ovmail{display
 
 <script>
 "use strict";
-const VERSIE="55.5";
+const VERSIE="55.6";
 const VERSIE_DATUM="03-11-2026";
 /* ---------- Basis ---------- */
 const PALET=["#2d6a4f","#1B5EBE","#E8007D","#c77d1a","#7a4fa0","#0f8b8d","#5b6b2f","#3d5a80","#a0522d","#7AB648"];
@@ -5193,7 +5193,7 @@ function fbTabel(blijf){if(!isBeheerder()||!fotoMag())return;galOpen=0;if(!blijf
   let h="",tot=0;
   for(const t of T){const A=fmapLijst(t.id).filter(x=>zf(t,x));if(!A.length&&zoek)continue;tot+=A.length;const kt="t|"+t.id,ot=zoek||fbtOpen.has(kt);
     const kn=(...a)=>`<span class="fbacties" onclick="event.stopPropagation()">${a.join("")}</span>`,up=(se,k)=>`<label class="ovk ovlink" style="cursor:pointer" title="Foto's toevoegen">➕ Foto's<input type="file" accept="image/*" multiple hidden onchange="fbUpload('${t.id}','${qa(se)}','${qa(k)}',this.files)"></label>`;
-    h+=`<div class="fbtrT" onclick="fbtKlap('${kt}')">${pijl(ot)} 🌱 <b>${esc(teeltLabel(t))}</b> <span class="status">(${A.length})</span>${kijker?"":kn(`<button class="ovk ovlink" onclick="fbNieuw('${t.id}')">➕ Serie</button>`,up("",""))}</div>`;if(!ot)continue;
+    h+=`<div class="fbtrT" onclick="fbtKlap('${kt}')">${pijl(ot)} 🌱 <b>${esc(teeltLabel(t))}</b> <span class="status">(${A.length})</span>${kijker?"":kn(`<button class="ovk ovlink" onclick="fbNieuw('${t.id}')">➕ Serie</button>`)}</div>`;if(!ot)continue;
     const B=zoek?{}:fbBoom(t.id);if(zoek)for(const x of A){const se=x.se||ZS,k=x.k||ZK;((B[se]=B[se]||{})[k]=B[se][k]||[]).push(x)}
     for(const se of Object.keys(B).sort(cmp)){const ks="s|"+t.id+"|"+se,os=zoek||fbtOpen.has(ks),K=Object.keys(B[se]).sort(cmp),ns=K.reduce((a,k)=>a+B[se][k].length,0);
       h+=`<div class="fbtrS" onclick="fbtKlap('${qa(ks)}')">${pijl(os)} 📂 <b>${esc(se)}</b> <span class="status">(${ns} · ${K.length} kleur${K.length===1?"":"en"})</span>${kijker?"":kn(se!==ZS?`<button class="ovk ovlink" onclick="fbNieuw('${t.id}','${qa(se)}')">➕ Kleur</button><button class="ovk ovlink" title="Andere naam" onclick="fbHernoem('${t.id}','${qa(se)}')">✏</button><button class="ovk ovlink" title="Serie weghalen (foto's gaan naar ongesorteerd)" onclick="fbWegLeeg('${t.id}','${qa(se)}')">✕</button>`:up(ZS,ZK))}</div>`;if(!os)continue;
