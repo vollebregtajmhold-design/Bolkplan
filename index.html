@@ -875,12 +875,17 @@ tr:hover .ovmail{opacity:1}@media (hover:none),(max-width:700px){.ovmail{display
 .fbgmod.aan{background:var(--groen)!important;color:#fff!important}
 .faistap{padding-left:20px;margin:0 0 10px;line-height:1.5}.faistap li{margin-bottom:6px}
 .fbgsw{width:28px;height:28px;border-radius:50%;border:2px solid #ccc;cursor:pointer;padding:0}.fbgsw.aan{border:3px solid var(--groen);box-shadow:0 0 0 2px #fff inset}
-.fbtwrap{max-height:62vh}.fbtab tr.fbtrT td{background:#e3f1e7;cursor:pointer;font-size:15px}.fbtab tr.fbtrS td:not(:first-child){background:#f3f8f5;cursor:pointer}
-.fbtab tr.fbtrK td:not(:nth-child(-n+2)){cursor:pointer}.fbtab tr.fbtfoto{cursor:pointer}.fbtab tr.fbtfoto:hover td{background:#dff0e6}.fbtab tr.fbtrT:hover td,.fbtab tr.fbtrS:hover td:not(:first-child),.fbtab tr.fbtrK:hover td:not(:nth-child(-n+2)){background:#cfe6d8}
-.fbtpijl{display:inline-block;width:14px;color:var(--groen)}.fbtd2{padding-left:26px!important}.fbtab td,.fbtab th{text-align:left!important;vertical-align:middle}.fbtab .fbtimg{width:56px;padding:3px!important}
-.fbtab .fbtimg .galfoto{width:50px;height:50px;min-height:0;border-radius:7px;padding:0;overflow:hidden}.fbtab .fbtimg .galfoto img{width:100%;height:100%;object-fit:cover}
-.fbtk,.fbtkl{cursor:pointer;font-weight:600}.fbtk:hover{background:#dff0e6}.fbtk.aan{color:var(--groen)}.fbtk.herh{color:#b5b0a5;font-weight:400}
-.fbtkl{color:#1f4d39;text-decoration:underline dotted}.fbtkl:hover{background:var(--groen);color:#fff}.fbtab tr.fbtnt td{border-top:2px solid #9fb8ab}.fbtab tr.fbtns td{border-top:1.5px solid #cfd8d3}
+.fbtwrap{max-height:calc(100vh - 230px);overflow:auto;border:1px solid #d8d2c4;border-radius:10px;background:#faf8f3;margin-top:8px}
+.fbtrT{padding:10px 12px;background:#e3f1e7;border-bottom:1px solid #d8d2c4;cursor:pointer;font-size:16px;position:sticky;top:0;z-index:2}.fbtrT:hover{background:#cfe6d8}
+.fbtrS{padding:8px 12px 8px 34px;background:#f3f8f5;border-bottom:1px solid #e6e0d4;cursor:pointer;font-size:15px}.fbtrS:hover{background:#dff0e6}
+.fbtrK{display:flex;flex-wrap:wrap;gap:14px 18px;align-items:flex-start;padding:10px 12px 12px 58px;border-bottom:1px solid #eee8dc}.fbtkgrp{display:flex;flex-direction:column;gap:5px;background:#f3f0e8;border-radius:10px;padding:6px}
+.fbtkl{font-size:14px;padding:0 2px}.fbtkl .status{font-size:12px}
+.fbtkaarten{display:flex;flex-wrap:wrap;gap:8px}
+.fbtkaart{width:150px;display:flex;flex-direction:column;gap:2px;cursor:pointer;background:#fff;border:1px solid #e6e0d4;border-radius:10px;padding:5px;font-size:12px}
+.fbtkaart:hover{border-color:var(--groen);box-shadow:0 2px 10px rgba(45,106,79,.25)}.fbtkaart b{font-size:13px;line-height:1.2}.fbtkaart span{color:#666}
+.fbtkaart .galfoto{width:100%;aspect-ratio:1;height:auto;min-height:0;padding:0;border-radius:7px;overflow:hidden;pointer-events:none}.fbtkaart .galfoto img{width:100%;height:100%;object-fit:cover}
+.fbtpijl{display:inline-block;width:16px;color:var(--groen)}
+@media (max-width:700px){.fbtrK{padding-left:16px}.fbtkaart{width:120px}}
 .galkop{margin:12px 0 6px;font-size:14px;color:#1f4d39}.galbalk{gap:6px;flex-wrap:wrap;align-items:center;margin:6px 0;padding:6px 0;position:sticky;top:-1px;background:#fff;z-index:2}
 .galfoto.amsel{outline:3px solid #2d6a4f;outline-offset:1px}
 .fzbesch{margin-top:10px;padding:10px;border:1px solid #cfe3d8;background:#f3faf6;border-radius:10px}
@@ -1064,7 +1069,7 @@ tr:hover .ovmail{opacity:1}@media (hover:none),(max-width:700px){.ovmail{display
 
 <script>
 "use strict";
-const VERSIE="55.3";
+const VERSIE="55.4";
 const VERSIE_DATUM="03-11-2026";
 /* ---------- Basis ---------- */
 const PALET=["#2d6a4f","#1B5EBE","#E8007D","#c77d1a","#7a4fa0","#0f8b8d","#5b6b2f","#3d5a80","#a0522d","#7AB648"];
@@ -5182,28 +5187,27 @@ function fbTabel(blijf){if(!isBeheerder()||!fotoMag())return;galOpen=0;if(!blijf
   const T=data.teeltduren||[],q=fzT.trim().toLowerCase(),zoek=!!q;
   const zf=(t,x)=>!q||q.split(/\s+/).every(w=>[fmN(x),x.b,x.fd,x.se,x.k,teeltLabel(t),(fmRas(x)||{}).naam].join(" ").toLowerCase().includes(w));
   const qa=v=>esc(String(v).replace(/\\/g,"\\\\").replace(/'/g,"\\'")),pijl=o=>`<span class="fbtpijl">${o?"▾":"▸"}</span>`,cmp=(a,b)=>(a===ZS||a===ZK)-(b===ZS||b===ZK)||a.localeCompare(b,"nl");
-  const fRij=(t,x,k,diep)=>`<tr class="fbtfoto" onclick="galOpen=1;fotoMapToon('${t.id}','${x.s}')" title="Klik: foto groot openen met alle gegevens"><td></td><td></td><td class="fbtd${diep}">${k?`🎨 ${esc(k)}`:""}</td>
-    <td class="fbtimg"><button class="galfoto" data-gm="${t.id}" data-gs="${x.s}"></button></td><td><b>${esc(fmN(x)||(fmRas(x)||{}).naam||"–")}</b></td><td>${esc(x.b||"")}</td><td>${esc(x.fd||"")}</td></tr>`;
+  /* foto-kaart: grote foto met naam, belading en FD-code eronder; klik = groot openen */
+  const kaart=(t,x)=>`<div class="fbtkaart" onclick="galOpen=1;fotoMapToon('${t.id}','${x.s}')" title="Klik: foto groot openen met alle gegevens"><button class="galfoto" data-gm="${t.id}" data-gs="${x.s}"></button>
+    <b>${esc(fmN(x)||(fmRas(x)||{}).naam||"–")}</b>${x.b?`<span>🛒 ${esc(x.b)}</span>`:""}${x.fd?`<span>🏷 ${esc(x.fd)}</span>`:""}</div>`;
   let h="",tot=0;
   for(const t of T){const A=fmapLijst(t.id).filter(x=>zf(t,x));if(!A.length&&zoek)continue;tot+=A.length;const kt="t|"+t.id,ot=zoek||fbtOpen.has(kt);
-    h+=`<tr class="fbtrT" onclick="fbtKlap('${kt}')"><td colspan="7">${pijl(ot)} 🌱 <b>${esc(teeltLabel(t))}</b> <span class="status">(${A.length})</span></td></tr>`;if(!ot)continue;
+    h+=`<div class="fbtrT" onclick="fbtKlap('${kt}')">${pijl(ot)} 🌱 <b>${esc(teeltLabel(t))}</b> <span class="status">(${A.length})</span></div>`;if(!ot)continue;
     const B={};for(const x of A){const se=x.se||ZS,k=x.k||ZK;((B[se]=B[se]||{})[k]=B[se][k]||[]).push(x)}
-    for(const se of Object.keys(B).sort(cmp)){const ks="s|"+t.id+"|"+se,os=zoek||fbtOpen.has(ks),ns=Object.values(B[se]).reduce((a,l)=>a+l.length,0);
-      h+=`<tr class="fbtrS" onclick="fbtKlap('${qa(ks)}')"><td></td><td colspan="6">${pijl(os)} 📂 <b>${esc(se)}</b> <span class="status">(${ns})</span></td></tr>`;if(!os)continue;
-      for(const k of Object.keys(B[se]).sort(cmp)){const L=B[se][k];if(L.length===1){h+=fRij(t,L[0],k,"");continue}
-        const kk="k|"+t.id+"|"+se+"|"+k,ok=zoek||fbtOpen.has(kk);
-        h+=`<tr class="fbtrK" onclick="fbtKlap('${qa(kk)}')"><td></td><td></td><td colspan="5">${pijl(ok)} 🎨 <b>${esc(k)}</b> <span class="status">(${L.length} foto's)</span></td></tr>`;
-        if(ok)for(const x of L)h+=fRij(t,x,"",2)}}}
+    for(const se of Object.keys(B).sort(cmp)){const ks="s|"+t.id+"|"+se,os=zoek||fbtOpen.has(ks),K=Object.keys(B[se]).sort(cmp),ns=K.reduce((a,k)=>a+B[se][k].length,0);
+      h+=`<div class="fbtrS" onclick="fbtKlap('${qa(ks)}')">${pijl(os)} 📂 <b>${esc(se)}</b> <span class="status">(${ns} · ${K.length} kleur${K.length===1?"":"en"})</span></div>`;if(!os)continue;
+      /* alle kleuren van deze serie naast elkaar: per kleur een blokje met de foto's */
+      h+=`<div class="fbtrK">${K.map(k=>{const L=B[se][k];return`<div class="fbtkgrp"><div class="fbtkl">🎨 <b>${esc(k)}</b> <span class="status">${L.length}</span></div><div class="fbtkaarten">${L.map(x=>kaart(t,x)).join("")}</div></div>`}).join("")}</div>`}}
   toonPop("🖼 Fotobibliotheek · tabel",`<div class="rij galbalk" style="gap:6px;flex-wrap:wrap;align-items:center">
       <button class="btn licht klein" onclick="galWeergave(false)" title="Terug naar de uitvouwboom">🌳 Boom</button><button class="btn klein" disabled>📋 Tabel</button>
       <button class="btn licht klein" onclick="fbtOpen=new Set();fbTabel(true)">Alles dicht</button><span class="status" style="margin-left:6px">${tot} foto's</span>
-      ${fmMandItems().length?`<span style="flex:1"></span><button class="btn klein" onclick="fmMailPop()">✉ Mail maken (${fmMandItems().length})</button>`:""}</div>
-    <input type="search" class="mwveld" style="margin:6px 0" placeholder="🔍 Zoek op naam, FD-code, serie, kleur of belading…" value="${esc(fzT)}" oninput="fzT=this.value;clearTimeout(window.fbZT);window.fbZT=setTimeout(()=>{fbTabel(true);const i=document.querySelector('#mobPop input[type=search]');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length)}},300)">
-    ${h?`<div class="vglwrap fbtwrap"><table class="vgltab fbtab"><thead><tr><th>🌱 Teelt</th><th>📂 Serie</th><th>🎨 Kleur</th><th>Foto</th><th>Naam</th><th>Belading</th><th>FD art.code</th></tr></thead><tbody>${h}</tbody></table></div>`:`<p class="status" style="padding:12px 0">Geen foto's gevonden.</p>`}
-    <p class="status" style="font-size:12px;margin:6px 0 0">Klik op een <b>teelt</b>: de series verschijnen. Klik op een <b>serie</b>: de kleuren verschijnen. Klik op een <b>kleur</b>: de foto gaat open met alle gegevens.</p>`);
-  galIn=1;const m=document.querySelector("#mobPop .mpop");if(m){m.classList.add("breed");m.style.maxWidth="1100px"}
-  const io=new IntersectionObserver(es=>es.forEach(async e=>{if(!e.isIntersecting)return;io.unobserve(e.target);const b=e.target,u=await fmapLaad(b.dataset.gm,b.dataset.gs);if(u&&b.isConnected)b.insertAdjacentHTML("afterbegin",`<img src="${u}" alt="" loading="lazy">`)}),{rootMargin:"300px"});
-  document.querySelectorAll("#mobPop .fbtimg .galfoto").forEach(b=>io.observe(b))}
+      <input type="search" class="mwveld" style="margin:0 0 0 8px;flex:1;min-width:220px" placeholder="🔍 Zoek op naam, FD-code, serie, kleur of belading…" value="${esc(fzT)}" oninput="fzT=this.value;clearTimeout(window.fbZT);window.fbZT=setTimeout(()=>{fbTabel(true);const i=document.querySelector('#mobPop input[type=search]');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length)}},300)">
+      ${fmMandItems().length?`<button class="btn klein" onclick="fmMailPop()">✉ Mail maken (${fmMandItems().length})</button>`:""}</div>
+    ${h?`<div class="fbtwrap">${h}</div>`:`<p class="status" style="padding:12px 0">Geen foto's gevonden.</p>`}
+    <p class="status" style="font-size:12px;margin:6px 0 0">Klik op een <b>teelt</b>: de series verschijnen. Klik op een <b>serie</b>: alle kleuren met hun foto's verschijnen. Klik op een <b>foto</b>: groot openen met alle gegevens.</p>`);
+  galIn=1;const m=document.querySelector("#mobPop .mpop");if(m){m.classList.add("breed");m.style.maxWidth="96vw";m.style.width="96vw"}
+  const io=new IntersectionObserver(es=>es.forEach(async e=>{if(!e.isIntersecting)return;io.unobserve(e.target);const b=e.target,u=await fmapLaad(b.dataset.gm,b.dataset.gs);if(u&&b.isConnected)b.insertAdjacentHTML("afterbegin",`<img src="${u}" alt="" loading="lazy">`)}),{rootMargin:"400px"});
+  document.querySelectorAll("#mobPop .fbtkaart .galfoto").forEach(b=>io.observe(b))}
 function fotoGalerij(tid){if(!isBeheerder()||!fotoMag())return;if(galTab&&tid==null&&!galKies){fbTabel(galOpen===1);return}galOpen=0;if(!wolkDoc){alert("Foto's werken alleen als u online bent ingelogd.");return}
   if(tid!=null)galTeelt=tid;const T=(data.teeltduren||[]).filter(t=>!galTeelt||t.id===galTeelt),zoek=!!fzT.trim(),open=key=>zoek||!galDicht.has(key)?"open":"";
   const q=v=>esc(String(v).replace(/\\/g,"\\\\").replace(/'/g,"\\'")),SE=new Set(),KL=new Set();
