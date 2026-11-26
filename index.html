@@ -875,7 +875,9 @@ tr:hover .ovmail{opacity:1}@media (hover:none),(max-width:700px){.ovmail{display
 .fbgmod.aan{background:var(--groen)!important;color:#fff!important}
 .faistap{padding-left:20px;margin:0 0 10px;line-height:1.5}.faistap li{margin-bottom:6px}
 .fbgsw{width:28px;height:28px;border-radius:50%;border:2px solid #ccc;cursor:pointer;padding:0}.fbgsw.aan{border:3px solid var(--groen);box-shadow:0 0 0 2px #fff inset}
-.fbtwrap{max-height:62vh}.fbtab td,.fbtab th{text-align:left!important;vertical-align:middle}.fbtab .fbtimg{width:56px;padding:3px!important}
+.fbtwrap{max-height:62vh}.fbtab tr.fbtrT td{background:#e3f1e7;cursor:pointer;font-size:15px}.fbtab tr.fbtrS td:not(:first-child){background:#f3f8f5;cursor:pointer}
+.fbtab tr.fbtrK td:not(:nth-child(-n+2)){cursor:pointer}.fbtab tr.fbtfoto{cursor:pointer}.fbtab tr.fbtfoto:hover td{background:#dff0e6}.fbtab tr.fbtrT:hover td,.fbtab tr.fbtrS:hover td:not(:first-child),.fbtab tr.fbtrK:hover td:not(:nth-child(-n+2)){background:#cfe6d8}
+.fbtpijl{display:inline-block;width:14px;color:var(--groen)}.fbtd2{padding-left:26px!important}.fbtab td,.fbtab th{text-align:left!important;vertical-align:middle}.fbtab .fbtimg{width:56px;padding:3px!important}
 .fbtab .fbtimg .galfoto{width:50px;height:50px;min-height:0;border-radius:7px;padding:0;overflow:hidden}.fbtab .fbtimg .galfoto img{width:100%;height:100%;object-fit:cover}
 .fbtk,.fbtkl{cursor:pointer;font-weight:600}.fbtk:hover{background:#dff0e6}.fbtk.aan{color:var(--groen)}.fbtk.herh{color:#b5b0a5;font-weight:400}
 .fbtkl{color:#1f4d39;text-decoration:underline dotted}.fbtkl:hover{background:var(--groen);color:#fff}.fbtab tr.fbtnt td{border-top:2px solid #9fb8ab}.fbtab tr.fbtns td{border-top:1.5px solid #cfd8d3}
@@ -1062,7 +1064,7 @@ tr:hover .ovmail{opacity:1}@media (hover:none),(max-width:700px){.ovmail{display
 
 <script>
 "use strict";
-const VERSIE="55.2";
+const VERSIE="55.3";
 const VERSIE_DATUM="03-11-2026";
 /* ---------- Basis ---------- */
 const PALET=["#2d6a4f","#1B5EBE","#E8007D","#c77d1a","#7a4fa0","#0f8b8d","#5b6b2f","#3d5a80","#a0522d","#7AB648"];
@@ -3987,7 +3989,7 @@ async function mobDelenIn2(k,zonder,tekst,el){
     const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=naam;a.click();melding("⬇ Plaatje gedownload","#2d6a4f")}
   catch(e){alert("Delen lukt niet: "+e.message)}}
 function aflSoort(k){const n=isoWeek(nuWk());mobSoort(k.replace("|"," · "),+maandagIso(n.y,n.w))}
-function sluitMobSoort(){try{galOpen=0;fzVia=0;fmapVoor=""}catch(e){}const m=document.getElementById("mobPop");if(m&&!m.hidden&&!window.ofKlaar&&[...m.querySelectorAll(".oftab .ofn")].some(i=>+i.value>0)&&!confirm("De order is nog niet opgeslagen.\nToch sluiten? (Klik op Annuleren en daarna op ✔ Opslaan)"))return;window.ofKlaar=false;if(m)m.hidden=true;if(tab==="oppotov"||tab==="aflever"||tab==="mobiel")render()}
+function sluitMobSoort(){try{galOpen=0;fzVia=0;fmapVoor="";fbTabel.open=0}catch(e){}const m=document.getElementById("mobPop");if(m&&!m.hidden&&!window.ofKlaar&&[...m.querySelectorAll(".oftab .ofn")].some(i=>+i.value>0)&&!confirm("De order is nog niet opgeslagen.\nToch sluiten? (Klik op Annuleren en daarna op ✔ Opslaan)"))return;window.ofKlaar=false;if(m)m.hidden=true;if(tab==="oppotov"||tab==="aflever"||tab==="mobiel")render()}
 function mobWeek(d){const t=plusWeken(mobWeekStart(),d),n=isoWeek(t);mob.week=n.w;mob.jaar=n.y;mob.partijId="";render()}
 /* ---------- Post-it: opmerkingen en vragen voor iedereen (gedeeld via de online planning) ---------- */
 let postitAlles=false;
@@ -5172,36 +5174,37 @@ async function galWeg(){if(!confirm(galSel.size+" foto's helemaal weghalen?"))re
 function fbToggle(el,key){if(el.open)galDicht.delete(key);else galDicht.add(key);galBewaarOpen()}
 /* ---------- 📋 Fotobibliotheek als tabel (draaitabel): elke regel = 1 foto. Klik op een teelt of serie = alleen die tonen (nog een keer = weer alles).
    Klik op de kleur of de foto = de foto groot openen, met alle gegevens. ---------- */
-let galTab=(()=>{try{return localStorage.getItem("potplanning-galtab")==="1"}catch(e){return false}})(),fbtF={t:"",se:"",k:""};
-function galWeergave(tab){galTab=!!tab;try{localStorage.setItem("potplanning-galtab",galTab?"1":"0")}catch(e){}fotoGalerij()}
-function fbtFilter(v,w){fbtF[v]=fbtF[v]===w?"":w;if(v==="t"&&!fbtF.t){fbtF.se="";fbtF.k=""}if(v==="se"&&!fbtF.se)fbtF.k="";fbTabel()}
-function fbTabel(){if(!isBeheerder()||!fotoMag())return;galOpen=0;
-  const T=data.teeltduren||[],tl=id=>{const t=T.find(x=>x.id===id);return t?teeltLabel(t):"?"},q=fzT.trim().toLowerCase();
-  let L=[];for(const t of T)for(const x of fmapLijst(t.id))L.push({t,x,r:fmRas(x)});
-  const zf=o=>!q||q.split(/\s+/).every(w=>[fmN(o.x),o.x.b,o.x.fd,o.x.se,o.x.k,teeltLabel(o.t),o.r&&o.r.naam].join(" ").toLowerCase().includes(w));
-  L=L.filter(o=>(!fbtF.t||o.t.id===fbtF.t)&&(!fbtF.se||(o.x.se||"")===fbtF.se)&&(!fbtF.k||(o.x.k||"")===fbtF.k)&&zf(o));
-  const ord=T.map(t=>t.id),cmp=(a,b)=>(a||"￿").localeCompare(b||"￿","nl");
-  L.sort((a,b)=>ord.indexOf(a.t.id)-ord.indexOf(b.t.id)||cmp(a.x.se,b.x.se)||cmp(a.x.k,b.x.k)||cmp(fmN(a.x),fmN(b.x)));
-  const qa=v=>esc(String(v).replace(/\\/g,"\\\\").replace(/'/g,"\\'"));let vt="",vs="";
-  const rij=o=>{const nT=o.t.id!==vt,nS=nT||(o.x.se||"")!==vs;vt=o.t.id;vs=o.x.se||"";
-    return`<tr class="${nT?"fbtnt":nS?"fbtns":""}"><td class="fbtimg"><button class="galfoto" data-gm="${o.t.id}" data-gs="${o.x.s}" onclick="galOpen=1;fotoMapToon('${o.t.id}','${o.x.s}')" title="Foto openen"></button></td>
-      <td class="fbtk ${fbtF.t?"aan":""}${nT?"":" herh"}" onclick="fbtFilter('t','${o.t.id}')" title="${fbtF.t?"Klik: weer alle teelten":"Klik: alleen deze teelt"}">${esc(teeltLabel(o.t))}</td>
-      <td class="fbtk ${fbtF.se?"aan":""}${nS?"":" herh"}" onclick="fbtFilter('se','${qa(o.x.se||"")}')" title="${fbtF.se?"Klik: weer alle series":"Klik: alleen deze serie"}">${esc(o.x.se||"–")}</td>
-      <td class="fbtkl" onclick="galOpen=1;fotoMapToon('${o.t.id}','${o.x.s}')" title="Klik: foto openen met alle gegevens">${esc(o.x.k||"–")}</td>
-      <td>${esc(fmN(o.x)||(o.r?o.r.naam:""))}</td><td>${esc(o.x.b||"")}</td><td>${esc(o.x.fd||"")}</td></tr>`};
-  const chip=(v,lbl)=>fbtF[v]?`<button class="btn klein" onclick="fbtFilter('${v}',fbtF['${v}'])" title="Filter weghalen">${esc(lbl)} ✕</button>`:"";
+let galTab=(()=>{try{return localStorage.getItem("potplanning-galtab")==="1"}catch(e){return false}})(),fbtOpen=new Set();
+/* 📋 Fotobibliotheek als uitklap-tabel: teelten dicht → klik = series → klik = kleuren → klik = foto met gegevens */
+function galWeergave(tab){galTab=!!tab;fbtOpen=new Set();try{localStorage.setItem("potplanning-galtab",galTab?"1":"0")}catch(e){}fotoGalerij()}
+function fbtKlap(k){fbtOpen.has(k)?fbtOpen.delete(k):fbtOpen.add(k);const sc=(document.querySelector("#mobPop .fbtwrap")||{}).scrollTop||0;fbTabel(true);const w=document.querySelector("#mobPop .fbtwrap");if(w)w.scrollTop=sc}
+function fbTabel(blijf){if(!isBeheerder()||!fotoMag())return;galOpen=0;if(!blijf&&!fbTabel.open)fbtOpen=new Set();fbTabel.open=1;
+  const T=data.teeltduren||[],q=fzT.trim().toLowerCase(),zoek=!!q;
+  const zf=(t,x)=>!q||q.split(/\s+/).every(w=>[fmN(x),x.b,x.fd,x.se,x.k,teeltLabel(t),(fmRas(x)||{}).naam].join(" ").toLowerCase().includes(w));
+  const qa=v=>esc(String(v).replace(/\\/g,"\\\\").replace(/'/g,"\\'")),pijl=o=>`<span class="fbtpijl">${o?"▾":"▸"}</span>`,cmp=(a,b)=>(a===ZS||a===ZK)-(b===ZS||b===ZK)||a.localeCompare(b,"nl");
+  const fRij=(t,x,k,diep)=>`<tr class="fbtfoto" onclick="galOpen=1;fotoMapToon('${t.id}','${x.s}')" title="Klik: foto groot openen met alle gegevens"><td></td><td></td><td class="fbtd${diep}">${k?`🎨 ${esc(k)}`:""}</td>
+    <td class="fbtimg"><button class="galfoto" data-gm="${t.id}" data-gs="${x.s}"></button></td><td><b>${esc(fmN(x)||(fmRas(x)||{}).naam||"–")}</b></td><td>${esc(x.b||"")}</td><td>${esc(x.fd||"")}</td></tr>`;
+  let h="",tot=0;
+  for(const t of T){const A=fmapLijst(t.id).filter(x=>zf(t,x));if(!A.length&&zoek)continue;tot+=A.length;const kt="t|"+t.id,ot=zoek||fbtOpen.has(kt);
+    h+=`<tr class="fbtrT" onclick="fbtKlap('${kt}')"><td colspan="7">${pijl(ot)} 🌱 <b>${esc(teeltLabel(t))}</b> <span class="status">(${A.length})</span></td></tr>`;if(!ot)continue;
+    const B={};for(const x of A){const se=x.se||ZS,k=x.k||ZK;((B[se]=B[se]||{})[k]=B[se][k]||[]).push(x)}
+    for(const se of Object.keys(B).sort(cmp)){const ks="s|"+t.id+"|"+se,os=zoek||fbtOpen.has(ks),ns=Object.values(B[se]).reduce((a,l)=>a+l.length,0);
+      h+=`<tr class="fbtrS" onclick="fbtKlap('${qa(ks)}')"><td></td><td colspan="6">${pijl(os)} 📂 <b>${esc(se)}</b> <span class="status">(${ns})</span></td></tr>`;if(!os)continue;
+      for(const k of Object.keys(B[se]).sort(cmp)){const L=B[se][k];if(L.length===1){h+=fRij(t,L[0],k,"");continue}
+        const kk="k|"+t.id+"|"+se+"|"+k,ok=zoek||fbtOpen.has(kk);
+        h+=`<tr class="fbtrK" onclick="fbtKlap('${qa(kk)}')"><td></td><td></td><td colspan="5">${pijl(ok)} 🎨 <b>${esc(k)}</b> <span class="status">(${L.length} foto's)</span></td></tr>`;
+        if(ok)for(const x of L)h+=fRij(t,x,"",2)}}}
   toonPop("🖼 Fotobibliotheek · tabel",`<div class="rij galbalk" style="gap:6px;flex-wrap:wrap;align-items:center">
       <button class="btn licht klein" onclick="galWeergave(false)" title="Terug naar de uitvouwboom">🌳 Boom</button><button class="btn klein" disabled>📋 Tabel</button>
-      <span class="status" style="margin-left:6px">${L.length} foto${L.length===1?"":"'s"}</span>${chip("t",fbtF.t?tl(fbtF.t):"")}${chip("se",fbtF.se)}
+      <button class="btn licht klein" onclick="fbtOpen=new Set();fbTabel(true)">Alles dicht</button><span class="status" style="margin-left:6px">${tot} foto's</span>
       ${fmMandItems().length?`<span style="flex:1"></span><button class="btn klein" onclick="fmMailPop()">✉ Mail maken (${fmMandItems().length})</button>`:""}</div>
-    <input type="search" class="mwveld" style="margin:6px 0" placeholder="🔍 Zoek op naam, FD-code, serie, kleur of belading…" value="${esc(fzT)}" oninput="fzT=this.value;clearTimeout(window.fbZT);window.fbZT=setTimeout(()=>{fbTabel();const i=document.querySelector('#mobPop input[type=search]');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length)}},300)">
-    ${L.length?`<div class="vglwrap fbtwrap"><table class="vgltab fbtab"><thead><tr><th>Foto</th><th>🌱 Teelt</th><th>📂 Serie</th><th>🎨 Kleur</th><th>Naam</th><th>Belading</th><th>FD art.code</th></tr></thead><tbody>${L.map(rij).join("")}</tbody></table></div>`
-      :`<p class="status" style="padding:12px 0">Geen foto's gevonden.</p>`}
-    <p class="status" style="font-size:12px;margin:6px 0 0">Klik op een <b>teelt</b> of <b>serie</b>: alleen die tonen. Nog een keer klikken: weer alles. Klik op de <b>kleur</b> of de foto: de foto groot openen.</p>`);
+    <input type="search" class="mwveld" style="margin:6px 0" placeholder="🔍 Zoek op naam, FD-code, serie, kleur of belading…" value="${esc(fzT)}" oninput="fzT=this.value;clearTimeout(window.fbZT);window.fbZT=setTimeout(()=>{fbTabel(true);const i=document.querySelector('#mobPop input[type=search]');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length)}},300)">
+    ${h?`<div class="vglwrap fbtwrap"><table class="vgltab fbtab"><thead><tr><th>🌱 Teelt</th><th>📂 Serie</th><th>🎨 Kleur</th><th>Foto</th><th>Naam</th><th>Belading</th><th>FD art.code</th></tr></thead><tbody>${h}</tbody></table></div>`:`<p class="status" style="padding:12px 0">Geen foto's gevonden.</p>`}
+    <p class="status" style="font-size:12px;margin:6px 0 0">Klik op een <b>teelt</b>: de series verschijnen. Klik op een <b>serie</b>: de kleuren verschijnen. Klik op een <b>kleur</b>: de foto gaat open met alle gegevens.</p>`);
   galIn=1;const m=document.querySelector("#mobPop .mpop");if(m){m.classList.add("breed");m.style.maxWidth="1100px"}
   const io=new IntersectionObserver(es=>es.forEach(async e=>{if(!e.isIntersecting)return;io.unobserve(e.target);const b=e.target,u=await fmapLaad(b.dataset.gm,b.dataset.gs);if(u&&b.isConnected)b.insertAdjacentHTML("afterbegin",`<img src="${u}" alt="" loading="lazy">`)}),{rootMargin:"300px"});
   document.querySelectorAll("#mobPop .fbtimg .galfoto").forEach(b=>io.observe(b))}
-function fotoGalerij(tid){if(!isBeheerder()||!fotoMag())return;if(galTab&&tid==null&&!galKies){fbTabel();return}galOpen=0;if(!wolkDoc){alert("Foto's werken alleen als u online bent ingelogd.");return}
+function fotoGalerij(tid){if(!isBeheerder()||!fotoMag())return;if(galTab&&tid==null&&!galKies){fbTabel(galOpen===1);return}galOpen=0;if(!wolkDoc){alert("Foto's werken alleen als u online bent ingelogd.");return}
   if(tid!=null)galTeelt=tid;const T=(data.teeltduren||[]).filter(t=>!galTeelt||t.id===galTeelt),zoek=!!fzT.trim(),open=key=>zoek||!galDicht.has(key)?"open":"";
   const q=v=>esc(String(v).replace(/\\/g,"\\\\").replace(/'/g,"\\'")),SE=new Set(),KL=new Set();
   /* tegel = foto + naam + belading; het hele blok kan naar een andere teelt, serie of kleur gesleept worden */
