@@ -1070,7 +1070,7 @@ tr:hover .ovmail{opacity:1}@media (hover:none),(max-width:700px){.ovmail{display
 
 <script>
 "use strict";
-const VERSIE="55.8";
+const VERSIE="55.9";
 const VERSIE_DATUM="03-11-2026";
 /* ---------- Basis ---------- */
 const PALET=["#2d6a4f","#1B5EBE","#E8007D","#c77d1a","#7a4fa0","#0f8b8d","#5b6b2f","#3d5a80","#a0522d","#7AB648"];
@@ -5222,7 +5222,8 @@ function fbtZet(el){document.querySelectorAll("#mobPop .fbtsel").forEach(x=>x.cl
 document.addEventListener("keydown",e=>{const P=document.getElementById("mobPop");if(!P||P.hidden||!P.querySelector(".fbtwrap"))return;
   if(!["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Enter"," "].includes(e.key))return;const t=e.target;
   if(t&&(t.tagName==="INPUT"||t.tagName==="TEXTAREA"||t.tagName==="SELECT")){if(!(t.type==="search"&&e.key==="ArrowDown"))return;t.blur()}
-  if(t&&t.tagName==="BUTTON"&&(e.key==="Enter"||e.key===" "))return;
+  /* Enter/spatie: altijd voor de tabel als er iets gekozen is (anders drukt Enter op de knop die nog 'vast' zit, bijv. 📷 Foto) */
+  if(t&&(t.tagName==="BUTTON"||t.tagName==="LABEL"||t.tagName==="A")){if((e.key==="Enter"||e.key===" ")&&!fbtSel)return;t.blur()}
   const I=[...P.querySelectorAll(".fbtwrap [data-k]")];if(!I.length)return;e.preventDefault();
   const cur=I.find(x=>x.dataset.k===fbtSel);if(!cur){fbtZet(I[0]);return}
   const i=I.indexOf(cur),kaart=cur.classList.contains("fbtkaart"),k=cur.dataset.k,open=fzT.trim()||fbtOpen.has(k);
