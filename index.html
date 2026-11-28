@@ -889,6 +889,9 @@ tr:hover .ovmail{opacity:1}@media (hover:none),(max-width:700px){.ovmail{display
 @media (max-width:700px){.fbtrK{padding-left:16px}.fbtkaart{width:120px}}
 .ovtl{cursor:pointer}.ovtl:hover{text-decoration:underline;color:var(--groen)}.ovtl.aan{color:var(--groen);font-weight:700}.tfchip{white-space:nowrap}
 .srtkaart{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}.srtfoto{width:150px;height:150px;border-radius:10px;overflow:hidden;background:#eee;flex:none}.srtfoto img{width:100%;height:100%;object-fit:cover}
+.srtmenu{position:fixed;z-index:2147483000;background:#fff;border:2px solid var(--groen);border-radius:12px;box-shadow:0 10px 28px rgba(0,0,0,.28);padding:4px;min-width:250px}
+.srtmkop{font-size:12px;color:#777;padding:4px 10px 2px}.srtmenu button{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:none;border:0;border-radius:8px;padding:7px 10px;cursor:pointer;font:inherit}
+.srtmenu button:hover{background:#dff0e6}.srtmenu b{display:block;font-size:14px}.srtmenu small{color:#777;font-size:12px}.srtmic{font-size:18px;width:22px;text-align:center}
 .srtic{width:20px;height:20px;border-radius:5px;vertical-align:-4px;margin-right:4px;background:#5a3484}
 .srtduur{border-collapse:collapse;margin-top:3px}.srtduur td{padding:1px 12px 1px 0;border:0!important;font-size:13px}
 .srtinfo{border-collapse:collapse;font-size:14px;flex:1;min-width:260px}.srtinfo th{text-align:left;color:#666;font-weight:400;background:transparent!important;padding:4px 12px 4px 0;vertical-align:top;white-space:nowrap}.srtinfo td{padding:4px 0;border-bottom:1px solid #eee}
@@ -1076,7 +1079,7 @@ tr:hover .ovmail{opacity:1}@media (hover:none),(max-width:700px){.ovmail{display
 
 <script>
 "use strict";
-const VERSIE="56.5";
+const VERSIE="56.6";
 const VERSIE_DATUM="03-11-2026";
 /* ---------- Basis ---------- */
 const PALET=["#2d6a4f","#1B5EBE","#E8007D","#c77d1a","#7a4fa0","#0f8b8d","#5b6b2f","#3d5a80","#a0522d","#7AB648"];
@@ -4489,6 +4492,17 @@ async function soortInfo(id){const r=data.rassen.find(x=>x.id===id);if(!r)return
   </table></div>`;
   toonPop("ℹ "+esc(r.naam||"Soort"),h+`<div class="rij" style="gap:8px;margin-top:10px"><span style="flex:1"></span>${(data.fotos||{})[id]&&fotoMag()?`<button class="btn licht" onclick="fotoPop('${id}')">📷 Foto's</button>`:""}<button class="btn" onclick="sluitMobSoort();naarSoort('${id}')">✏ Wijzigen in Parameters ›</button></div>`);
   const m=document.querySelector("#mobPop .mpop");if(m)m.style.maxWidth="680px";try{fotoVul()}catch(e){}}
+/* Afleverplanning: klik op een soort = klein menu met 3 keuzes */
+function soortMenu(e,k){srtMenuDicht();const[pr,so]=String(k).split(" · "),r=vkRasVan(pr+"|"+so),m=document.createElement("div");m.className="srtmenu";
+  const it=(ic,t,sub,f)=>`<button type="button" onclick="srtMenuDicht();${f}"><span class="srtmic">${ic}</span><span><b>${t}</b><small>${sub}</small></span></button>`,q=esc(JSON.stringify(k));
+  m.innerHTML=`<div class="srtmkop">${esc(so||k)}</div>`+it("📊","Alle weken","plan, gereserveerd, nog beschikbaar",`soortPop(${q})`)
+    +(r?it("ℹ","Alle gegevens","instellingen uit Parameters",`soortInfo('${r.id}')`):"")
+    +(r&&!kijker?it("✉","Aanbieding mailen","weken, prijs, foto, klant",`aanbMailK(${q})`):"");
+  document.body.appendChild(m);const w=m.offsetWidth,h=m.offsetHeight;m.style.left=Math.min(e.clientX,window.innerWidth-w-8)+"px";m.style.top=(e.clientY+h+8>window.innerHeight?Math.max(8,e.clientY-h):e.clientY+4)+"px";
+  setTimeout(()=>{document.addEventListener("mousedown",srtMenuBuiten,true);document.addEventListener("keydown",srtMenuEsc,true)},0)}
+function srtMenuBuiten(e){if(!e.target.closest(".srtmenu"))srtMenuDicht()}function srtMenuEsc(e){if(e.key==="Escape")srtMenuDicht()}
+function srtMenuDicht(){document.querySelectorAll(".srtmenu").forEach(x=>x.remove());document.removeEventListener("mousedown",srtMenuBuiten,true);document.removeEventListener("keydown",srtMenuEsc,true)}
+window.addEventListener("scroll",()=>srtMenuDicht(),true);
 function teeltKlik(id){teeltFilter=teeltFilter===id?"":id;ovStart=null;render()}
 function teeltKlikLabel(pr){const t=data.teeltduren.find(x=>(x.product||"")+(x.potmaat?" "+x.potmaat+" cm":"")===pr||teeltLabel(x)===pr);if(t)teeltKlik(t.id)}
 function teeltChip(){if(teeltFilter&&!data.teeltduren.some(t=>t.id===teeltFilter))teeltFilter="";const t=data.teeltduren.find(x=>x.id===teeltFilter);
@@ -4848,7 +4862,7 @@ function toonAflever(){syncSoorten();
   h+=`<table class="ovtabel" data-st="afl" data-leeg="${leegC.join(",")}" data-codes='${JSON.stringify(alleWk.map(code))}' onmouseover="ovKruis(event)" onmouseleave="ovKruis(event)" onclick="ovKlik(event)">
     <tr><th class="ovnaam">${kop}</th>${alleWk.map((t,c)=>`<th data-c="${c}"${vis(c)} class="${t===nu?"nu":""} vkwkkop" onclick="vkPop('${code(t)}')" title="Week ${isoWeek(new Date(t)).w} van ${isoWeek(new Date(t)).y} · klik: overzicht reserveringen">${code(t)}</th>`).join("")}</tr>`;
   for(const k of lijst){const[pr,so]=k.split("|");
-    h+=`<tr><td class="ovnaam"><span class="ovtl${teeltFilter&&teeltLabelF()===pr?" aan":""}" data-pr="${esc(pr)}" onclick="teeltKlikLabel(this.dataset.pr)" oncontextmenu="naarTeelt(this.dataset.pr);return false" title="${teeltFilter?"Klik: weer alle teelten":"Klik: alleen deze teelt"} · rechtsklik: teelt openen">${esc(pr)}</span> · <span class="ovsl" data-k="${esc(pr+" · "+so)}" onclick="soortPop(this.dataset.k)" title="Klik: alle weken van deze soort (plan, gereserveerd, beschikbaar)">${esc(so)}</span><button type="button" class="ovmail" data-k="${esc(pr+" · "+so)}" onclick="event.stopPropagation();aanbMailK(this.dataset.k)" title="✉ Aanbieding mailen (weken, prijs, foto, klant)">✉</button></td>${alleWk.map((t,c)=>{const a=cel[k+"|"+t]||0,vk=verkSom(k,t),v=aflMod==="verk"?verkDef(k,t):aflMod==="aanb"?verkAanb(k,t):aflMod==="vers"?a-vk:a;
+    h+=`<tr><td class="ovnaam"><span class="ovtl${teeltFilter&&teeltLabelF()===pr?" aan":""}" data-pr="${esc(pr)}" onclick="teeltKlikLabel(this.dataset.pr)" oncontextmenu="naarTeelt(this.dataset.pr);return false" title="${teeltFilter?"Klik: weer alle teelten":"Klik: alleen deze teelt"} · rechtsklik: teelt openen">${esc(pr)}</span> · <span class="ovsl" data-k="${esc(pr+" · "+so)}" onclick="event.stopPropagation();soortMenu(event,this.dataset.k)" title="Klik: kies wat u wilt zien">${esc(so)}</span><button type="button" class="ovmail" data-k="${esc(pr+" · "+so)}" onclick="event.stopPropagation();aanbMailK(this.dataset.k)" title="✉ Aanbieding mailen (weken, prijs, foto, klant)">✉</button></td>${alleWk.map((t,c)=>{const a=cel[k+"|"+t]||0,vk=verkSom(k,t),v=aflMod==="verk"?verkDef(k,t):aflMod==="aanb"?verkAanb(k,t):aflMod==="vers"?a-vk:a;
       const kl=a>0&&a-vk<0?"stover":a>0&&vk>0&&(a-vk)<a*0.1?"stkrap":"";
       return`<td data-c="${c}" data-v="${a||vk}" data-k="${esc(k)}" data-w="${t}"${vis(c)} class="${v<0?"ovmin":""} ${kl}" ${kl?`title="${kl==="stover"?"Te veel gereserveerd: "+getal(vk-a)+" tekort":"Bijna uitverkocht: nog "+getal(a-vk)+" van "+getal(a)}"`:""}>${v||(aflMod==="vers"&&(a||vk))?(vk>0&&aflMod!=="verk"&&aflMod!=="aanb"?`<span class="ordring ${verkDef(k,t)?"":"ordaanb"}" title="Hier zit een order in: ${getal(vk)} gereserveerd${verkAanb(k,t)?" (waarvan "+getal(verkAanb(k,t))+" aanbieding)":""}">${getal(v)}</span>`:getal(v)):'<span class="ovleeg">—</span>'}</td>`}).join("")}</tr>`}
   const totM=t=>{if(aflMod==="afl")return tot[t]||0;if(aflMod==="verk")return lijst.reduce((a,k)=>a+verkDef(k,t),0);if(aflMod==="aanb")return lijst.reduce((a,k)=>a+verkAanb(k,t),0);const vk=lijst.reduce((a,k)=>a+verkSom(k,t),0);return(tot[t]||0)-vk};
