@@ -894,7 +894,15 @@ tr:hover .ovmail{opacity:1}@media (hover:none),(max-width:700px){.ovmail{display
 .srtmenu button+button{border-top:1.5px solid #222;border-radius:0}.srtmenu button:hover{background:#dff0e6}.srtmenu b{display:block;font-size:14px}.srtmenu small{color:#777;font-size:12px}.srtmic{font-size:18px;width:22px;text-align:center}
 .srtic{width:20px;height:20px;border-radius:5px;vertical-align:-4px;margin-right:4px;background:#5a3484}
 .srtalles{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}.srtA{flex:1 1 380px;min-width:300px}.srtB{flex:1.4 1 520px;min-width:300px}.srtkop{font-weight:700;color:#1f4d39;font-size:15px;margin-bottom:6px;padding-bottom:4px;border-bottom:2px solid #cfe3d8}
-.srtalles .srtkaart{flex-direction:column}.srtalles .srtrechts{width:100%}.srtalles .srtnot{min-height:180px}.srtalles .srtknop{justify-content:flex-start}
+.srtalles .srtkaart{flex-direction:column}.srtalles .srtrechts{width:100%}.srtalles .srtnot{min-height:110px}
+.srtonder{display:flex;gap:12px;align-items:flex-start;margin-top:12px}
+.srtonder .srtfoto{width:140px;height:140px}
+.srtonder .srtrechts{flex:1;min-width:0}
+.srtalles .srtinfo{font-size:13px}
+.srtalles .srtinfo th,.srtalles .srtinfo td{padding:2px 10px 2px 0;line-height:1.3}
+.srtalles .srtduur{width:auto!important;margin-top:1px}
+.srtalles .srtduur td{padding:0 14px 0 0;font-size:12px;line-height:1.3}
+.srtalles .srtic{width:18px;height:18px}.srtalles .srtknop{justify-content:flex-start}
 .srtrechts{width:270px;flex:none;display:flex;flex-direction:column;gap:4px}.srtknop{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.srtnot{width:100%;min-height:220px;flex:1;margin:0;resize:vertical;font-size:14px}@media (max-width:760px){.srtrechts{width:100%}}
 .srtduur{border-collapse:collapse;margin-top:3px}.srtduur td{padding:1px 12px 1px 0;border:0!important;font-size:13px}
 .srtinfo{border-collapse:collapse;font-size:14px;flex:1;min-width:260px}.srtinfo th{text-align:left;color:#666;font-weight:400;background:transparent!important;padding:4px 12px 4px 0;vertical-align:top;white-space:nowrap}.srtinfo td{padding:4px 0;border-bottom:1px solid #eee}
@@ -1082,7 +1090,7 @@ tr:hover .ovmail{opacity:1}@media (hover:none),(max-width:700px){.ovmail{display
 
 <script>
 "use strict";
-const VERSIE="57.4";
+const VERSIE="57.5";
 const VERSIE_DATUM="03-11-2026";
 /* ---------- Basis ---------- */
 const PALET=["#2d6a4f","#1B5EBE","#E8007D","#c77d1a","#7a4fa0","#0f8b8d","#5b6b2f","#3d5a80","#a0522d","#7AB648"];
@@ -4507,8 +4515,10 @@ async function soortAlles(k,rid){srtMenuDicht();const[pr,so]=String(k).split(" �
   let afl=soortPop(k,true),info=r?await soortInfo(r.id,true):`<p class="status">Deze soort staat niet in Parameters.</p>`,rechts="";
   /* knoppen + notitie naar de linkerkant (onder de afleverplanning): daar is ruimte */
   const i=info.indexOf('<div class="srtrechts">');if(i>=0){rechts=info.slice(i,info.lastIndexOf("</div>"));info=info.slice(0,i)+"</div>"}
+  /* foto ook naar links, naast de notitie: dan past alles zonder scrollen */
+  let foto="";info=info.replace(/<div class="srtfoto"[^>]*><\/div>/,m=>{foto=m;return""});
   toonPop(esc(so||k),`<div class="srtalles"><div class="srtA"><div class="srtkop">Afleverplanning <span class="status">· plan, gereserveerd, nog beschikbaar</span></div>${afl}
-      <p class="status" style="font-size:12px;margin:6px 0 0">Klik op een week om te reserveren.</p>${r&&!kijker&&!KLANT.code?`<button class="btn klein" style="margin-top:8px" onclick="am=null;aanbMailPop('${r.id}')">✉ Aanbieding mailen</button>`:""}${rechts?`<div style="margin-top:14px">${rechts}</div>`:""}</div>
+      <p class="status" style="font-size:12px;margin:6px 0 0">Klik op een week om te reserveren.</p>${r&&!kijker&&!KLANT.code?`<button class="btn klein" style="margin-top:8px" onclick="am=null;aanbMailPop('${r.id}')">✉ Aanbieding mailen</button>`:""}${rechts||foto?`<div class="srtonder">${foto}${rechts}</div>`:""}</div>
     <div class="srtB"><div class="srtkop">Soortgegevens</div>${info}</div></div>`);
   const m=document.querySelector("#mobPop .mpop");if(m){m.style.maxWidth="96vw";m.style.width="1320px"}try{fotoVul()}catch(e){}}
 function soortMenuId(e,id){const r=data.rassen.find(x=>x.id===id);if(!r)return;const t=data.teeltduren.find(x=>x.id===r.teeltId)||{};
