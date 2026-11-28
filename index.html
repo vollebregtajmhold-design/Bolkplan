@@ -1079,7 +1079,7 @@ tr:hover .ovmail{opacity:1}@media (hover:none),(max-width:700px){.ovmail{display
 
 <script>
 "use strict";
-const VERSIE="57.0";
+const VERSIE="57.1";
 const VERSIE_DATUM="03-11-2026";
 /* ---------- Basis ---------- */
 const PALET=["#2d6a4f","#1B5EBE","#E8007D","#c77d1a","#7a4fa0","#0f8b8d","#5b6b2f","#3d5a80","#a0522d","#7AB648"];
@@ -4497,8 +4497,8 @@ function soortMenuId(e,id){const r=data.rassen.find(x=>x.id===id);if(!r)return;c
   soortMenu(e,(t.product||"")+(t.potmaat?" "+t.potmaat+" cm":"")+" · "+r.naam,id)}
 function soortMenu(e,k,rid){e.preventDefault();srtMenuDicht();const[pr,so]=String(k).split(" · "),r=(rid&&data.rassen.find(x=>x.id===rid))||vkRasVan(pr+"|"+so),m=document.createElement("div");m.className="srtmenu";
   const it=(ic,t,sub,f)=>`<button type="button" onclick="srtMenuDicht();${f}"><span><b>${t}</b><small>${sub}</small></span></button>`,q=esc(JSON.stringify(k));
-  m.innerHTML=`<div class="srtmkop">${esc(so||k)}</div>`+it("📊","Alle weken","plan, gereserveerd, nog beschikbaar",`soortPop(${q})`)
-    +(r?it("ℹ","Alle gegevens","instellingen uit Parameters",`soortInfo('${r.id}')`):"")
+  m.innerHTML=`<div class="srtmkop">${esc(so||k)}</div>`+it("📊","Afleverplanning","plan, gereserveerd, nog beschikbaar",`soortPop(${q})`)
+    +(r?it("ℹ","Soortgegevens","instellingen uit Parameters",`soortInfo('${r.id}')`):"")
     +(r&&!kijker&&!KLANT.code?it("✉","Aanbieding mailen","weken, prijs, klant",`aanbMailK(${q})`):"");
   document.body.appendChild(m);const w=m.offsetWidth,h=m.offsetHeight;m.style.left=Math.min(e.clientX,window.innerWidth-w-8)+"px";m.style.top=(e.clientY+h+8>window.innerHeight?Math.max(8,e.clientY-h):e.clientY+4)+"px";
   setTimeout(()=>{document.addEventListener("mousedown",srtMenuBuiten,true);document.addEventListener("keydown",srtMenuEsc,true)},0)}
