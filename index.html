@@ -893,6 +893,7 @@ tr:hover .ovmail{opacity:1}@media (hover:none),(max-width:700px){.ovmail{display
 .srtmkop{font-size:12px;color:#777;padding:4px 10px 4px;border-bottom:1.5px solid #222}.srtmenu button{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:none;border:0;border-radius:8px;padding:7px 10px;cursor:pointer;font:inherit}
 .srtmenu button+button{border-top:1.5px solid #222;border-radius:0}.srtmenu button:hover{background:#dff0e6}.srtmenu b{display:block;font-size:14px}.srtmenu small{color:#777;font-size:12px}.srtmic{font-size:18px;width:22px;text-align:center}
 .srtic{width:20px;height:20px;border-radius:5px;vertical-align:-4px;margin-right:4px;background:#5a3484}
+.srtsoort{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.srtknop{margin-left:auto;display:flex;gap:6px}
 .srtduur{border-collapse:collapse;margin-top:3px}.srtduur td{padding:1px 12px 1px 0;border:0!important;font-size:13px}
 .srtinfo{border-collapse:collapse;font-size:14px;flex:1;min-width:260px}.srtinfo th{text-align:left;color:#666;font-weight:400;background:transparent!important;padding:4px 12px 4px 0;vertical-align:top;white-space:nowrap}.srtinfo td{padding:4px 0;border-bottom:1px solid #eee}
 .galkop{margin:12px 0 6px;font-size:14px;color:#1f4d39}.galbalk{gap:6px;flex-wrap:wrap;align-items:center;margin:6px 0;padding:6px 0;position:sticky;top:-1px;background:#fff;z-index:2}
@@ -1079,7 +1080,7 @@ tr:hover .ovmail{opacity:1}@media (hover:none),(max-width:700px){.ovmail{display
 
 <script>
 "use strict";
-const VERSIE="57.1";
+const VERSIE="57.2";
 const VERSIE_DATUM="03-11-2026";
 /* ---------- Basis ---------- */
 const PALET=["#2d6a4f","#1B5EBE","#E8007D","#c77d1a","#7a4fa0","#0f8b8d","#5b6b2f","#3d5a80","#a0522d","#7AB648"];
@@ -4480,7 +4481,7 @@ async function soortInfo(id){const r=data.rassen.find(x=>x.id===id);if(!r)return
   const A=((r.aantallen||{})[planJaar])||[],wk=A.map((v,i)=>v>0?[i+1,v]:null).filter(Boolean),som=wk.reduce((a,x)=>a+x[1],0);
   const V=(r.verp||[]).filter(v=>v.naam||v.code);
   const h=`<div class="srtkaart">${(data.fotos||{})[id]?`<div class="srtfoto" data-foto="${id}"></div>`:""}<table class="srtinfo">
-    ${rij(((document.querySelector(".logoic")||{}).src?`<img class="srtic" src="${document.querySelector(".logoic").src}" alt="">`:"🌱")+" Teelt",esc(teeltLabel(t)))}${rij("Soort",`<b>${esc(r.naam||"")}</b>`)}${rij("Soortnr",esc(r.nr||""))}${rij("Gewas",esc(r.gewas||""))}
+    ${rij(((document.querySelector(".logoic")||{}).src?`<img class="srtic" src="${document.querySelector(".logoic").src}" alt="">`:"🌱")+" Teelt",esc(teeltLabel(t)))}${rij("Soort",`<div class="srtsoort"><b>${esc(r.naam||"")}</b><span class="srtknop">${!KLANT.code&&fotoMag()?`<button class="btn licht klein" onclick="fotoPop('${id}')">📷 Foto's</button>`:""}<button class="btn klein" onclick="sluitMobSoort();naarSoort('${id}')">✏ Wijzigen in Parameters ›</button></span></div>`)}${rij("Soortnr",esc(r.nr||""))}${rij("Gewas",esc(r.gewas||""))}
     ${rij("Leverancier",lev?esc(lev.naam||"")+` <span class="status">(besteltijd ${r.levertijd!=null&&r.levertijd!==""?esc(r.levertijd):levTijd(lev)} wk)</span>`:"")}
     ${rij("Fust",esc(r.fust||""))}${geenPrijs()?"":rij("Inkoopprijs",+r.prijs?"€ "+String(r.prijs).replace(".",","):"")}${rij("Uitval",r.uitval!=null&&r.uitval!==""?esc(r.uitval)+" %":"")}
     ${rij("Raaptijd",R+" wk"+(R>1?` <span class="status">(${raapVerdeling(r).map(v=>pctTekst(v)+"%").join(" / ")})</span>`:""))}
@@ -4490,7 +4491,7 @@ async function soortInfo(id){const r=data.rassen.find(x=>x.id===id);if(!r)return
     ${rij("Klopt",r.klopt?"✓ "+esc(r.klopt):"")}
     ${rij("Opzet "+planJaar,som?`<b>${getal(som)}</b> planten<br><span class="status">${wk.map(([w,v])=>`wk ${w}: ${getal(v)}`).join(" · ")}</span>`:`<span class="status">nog niets</span>`)}
   </table></div>`;
-  toonPop("ℹ "+esc(r.naam||"Soort"),h+`<div class="rij" style="gap:8px;margin-top:10px"><span style="flex:1"></span>${(data.fotos||{})[id]&&fotoMag()?`<button class="btn licht" onclick="fotoPop('${id}')">📷 Foto's</button>`:""}<button class="btn" onclick="sluitMobSoort();naarSoort('${id}')">✏ Wijzigen in Parameters ›</button></div>`);
+  toonPop("ℹ "+esc(r.naam||"Soort"),h);
   const m=document.querySelector("#mobPop .mpop");if(m)m.style.maxWidth="680px";try{fotoVul()}catch(e){}}
 /* Afleverplanning: klik op een soort = klein menu met 3 keuzes */
 function soortMenuId(e,id){const r=data.rassen.find(x=>x.id===id);if(!r)return;const t=data.teeltduren.find(x=>x.id===r.teeltId)||{};
