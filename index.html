@@ -893,7 +893,9 @@ tr:hover .ovmail{opacity:1}@media (hover:none),(max-width:700px){.ovmail{display
 .srtmkop{font-size:12px;color:#777;padding:4px 10px 4px;border-bottom:1.5px solid #222}.srtmenu button{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:none;border:0;border-radius:8px;padding:7px 10px;cursor:pointer;font:inherit}
 .srtmenu button+button{border-top:1.5px solid #222;border-radius:0}.srtmenu button:hover{background:#dff0e6}.srtmenu b{display:block;font-size:14px}.srtmenu small{color:#777;font-size:12px}.srtmic{font-size:18px;width:22px;text-align:center}
 .srtic{width:20px;height:20px;border-radius:5px;vertical-align:-4px;margin-right:4px;background:#5a3484}
-.srtsoort{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.srtknop{margin-left:auto;display:flex;gap:6px}
+.srtalles{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}.srtA{flex:1 1 380px;min-width:300px}.srtB{flex:1.4 1 520px;min-width:300px}.srtkop{font-weight:700;color:#1f4d39;font-size:15px;margin-bottom:6px;padding-bottom:4px;border-bottom:2px solid #cfe3d8}
+.srtalles .srtkaart{flex-direction:column}.srtalles .srtrechts{width:100%}.srtalles .srtnot{min-height:180px}.srtalles .srtknop{justify-content:flex-start}
+.srtrechts{width:270px;flex:none;display:flex;flex-direction:column;gap:4px}.srtknop{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.srtnot{width:100%;min-height:220px;flex:1;margin:0;resize:vertical;font-size:14px}@media (max-width:760px){.srtrechts{width:100%}}
 .srtduur{border-collapse:collapse;margin-top:3px}.srtduur td{padding:1px 12px 1px 0;border:0!important;font-size:13px}
 .srtinfo{border-collapse:collapse;font-size:14px;flex:1;min-width:260px}.srtinfo th{text-align:left;color:#666;font-weight:400;background:transparent!important;padding:4px 12px 4px 0;vertical-align:top;white-space:nowrap}.srtinfo td{padding:4px 0;border-bottom:1px solid #eee}
 .galkop{margin:12px 0 6px;font-size:14px;color:#1f4d39}.galbalk{gap:6px;flex-wrap:wrap;align-items:center;margin:6px 0;padding:6px 0;position:sticky;top:-1px;background:#fff;z-index:2}
@@ -1080,7 +1082,7 @@ tr:hover .ovmail{opacity:1}@media (hover:none),(max-width:700px){.ovmail{display
 
 <script>
 "use strict";
-const VERSIE="57.2";
+const VERSIE="57.4";
 const VERSIE_DATUM="03-11-2026";
 /* ---------- Basis ---------- */
 const PALET=["#2d6a4f","#1B5EBE","#E8007D","#c77d1a","#7a4fa0","#0f8b8d","#5b6b2f","#3d5a80","#a0522d","#7AB648"];
@@ -4475,13 +4477,13 @@ function teeltKeuze(cls){if(teeltFilter&&!data.teeltduren.some(t=>t.id===teeltFi
   return`<select class="${cls||"ovjaar"}" onchange="teeltFilter=this.value;ovStart=null;render()" title="Kies een teelt"><option value="">Alle teelten</option>${data.teeltduren.map(t=>`<option value="${t.id}" ${t.id===teeltFilter?"selected":""}>${esc(teeltNaam(t))}</option>`).join("")}</select>`}
 /* Opzet- en Afleverplanning: geen keuzelijst meer. Klik op een teelt in de tabel = alleen die teelt; nog een keer klikken = weer alle teelten */
 /* ---------- ℹ Soort-kaart: alle instellingen van één soort uit Parameters in een venster (vanuit Opzetplanning) ---------- */
-async function soortInfo(id){const r=data.rassen.find(x=>x.id===id);if(!r)return;const t=data.teeltduren.find(x=>x.id===r.teeltId)||{},lev=data.leveranciers.find(l=>l.id===r.leverancierId);
+async function soortInfo(id,alleenHtml){const r=data.rassen.find(x=>x.id===id);if(!r)return"";const t=data.teeltduren.find(x=>x.id===r.teeltId)||{},lev=data.leveranciers.find(l=>l.id===r.leverancierId);
   const rij=(a,b)=>b===""||b==null?"":`<tr><th>${a}</th><td>${b}</td></tr>`,R=r.raaptijd||1;
   const duur=o=>(o.perioden||[]).length?`<table class="srtduur"><tr><td class="status">vanaf wk</td><td class="status">totaal</td><td class="status">opkweek</td><td class="status">afkweek</td></tr>${o.perioden.map(p=>`<tr><td>${p.van}</td><td><b>${getal(p.totaal)}</b> wk</td><td>${getal(p.fase1)}</td><td>${p.totaal!=null&&p.fase1!=null?getal(Math.round((p.totaal-p.fase1)*10)/10):"–"}</td></tr>`).join("")}</table>`:"";
   const A=((r.aantallen||{})[planJaar])||[],wk=A.map((v,i)=>v>0?[i+1,v]:null).filter(Boolean),som=wk.reduce((a,x)=>a+x[1],0);
   const V=(r.verp||[]).filter(v=>v.naam||v.code);
   const h=`<div class="srtkaart">${(data.fotos||{})[id]?`<div class="srtfoto" data-foto="${id}"></div>`:""}<table class="srtinfo">
-    ${rij(((document.querySelector(".logoic")||{}).src?`<img class="srtic" src="${document.querySelector(".logoic").src}" alt="">`:"🌱")+" Teelt",esc(teeltLabel(t)))}${rij("Soort",`<div class="srtsoort"><b>${esc(r.naam||"")}</b><span class="srtknop">${!KLANT.code&&fotoMag()?`<button class="btn licht klein" onclick="fotoPop('${id}')">📷 Foto's</button>`:""}<button class="btn klein" onclick="sluitMobSoort();naarSoort('${id}')">✏ Wijzigen in Parameters ›</button></span></div>`)}${rij("Soortnr",esc(r.nr||""))}${rij("Gewas",esc(r.gewas||""))}
+    ${rij(((document.querySelector(".logoic")||{}).src?`<img class="srtic" src="${document.querySelector(".logoic").src}" alt="">`:"🌱")+" Teelt",esc(teeltLabel(t)))}${rij("Soort",`<b>${esc(r.naam||"")}</b>`)}${rij("Soortnr",esc(r.nr||""))}${rij("Gewas",esc(r.gewas||""))}
     ${rij("Leverancier",lev?esc(lev.naam||"")+` <span class="status">(besteltijd ${r.levertijd!=null&&r.levertijd!==""?esc(r.levertijd):levTijd(lev)} wk)</span>`:"")}
     ${rij("Fust",esc(r.fust||""))}${geenPrijs()?"":rij("Inkoopprijs",+r.prijs?"€ "+String(r.prijs).replace(".",","):"")}${rij("Uitval",r.uitval!=null&&r.uitval!==""?esc(r.uitval)+" %":"")}
     ${rij("Raaptijd",R+" wk"+(R>1?` <span class="status">(${raapVerdeling(r).map(v=>pctTekst(v)+"%").join(" / ")})</span>`:""))}
@@ -4490,13 +4492,28 @@ async function soortInfo(id){const r=data.rassen.find(x=>x.id===id);if(!r)return
     ${V.length?rij("Verpakkingen",V.map(v=>esc([v.naam,v.code,v.kar?"kar "+v.kar:""].filter(Boolean).join(" · "))).join("<br>")):""}
     ${rij("Klopt",r.klopt?"✓ "+esc(r.klopt):"")}
     ${rij("Opzet "+planJaar,som?`<b>${getal(som)}</b> planten<br><span class="status">${wk.map(([w,v])=>`wk ${w}: ${getal(v)}`).join(" · ")}</span>`:`<span class="status">nog niets</span>`)}
-  </table></div>`;
-  toonPop("ℹ "+esc(r.naam||"Soort"),h);
-  const m=document.querySelector("#mobPop .mpop");if(m)m.style.maxWidth="680px";try{fotoVul()}catch(e){}}
+  </table>
+  <div class="srtrechts"><div class="srtknop">${!KLANT.code&&fotoMag()?`<button class="btn licht klein" onclick="fotoPop('${id}')">📷 Foto's</button>`:""}<button class="btn klein" onclick="sluitMobSoort();naarSoort('${id}')">✏ Wijzigen in Parameters ›</button></div>
+    <label class="status" for="srtNot" style="margin-top:10px">📝 Eigen notitie</label>
+    <textarea id="srtNot" class="mwveld srtnot" placeholder="Bijv. let op bij oppotten, afspraak met kweker, ervaring vorig jaar…" ${kijker?"disabled":""} onchange="srtNotitie('${id}',this.value)">${esc(r.notitie||"")}</textarea>
+    <span class="status" style="font-size:11px">Wordt vanzelf bewaard.</span></div></div>`;
+  if(alleenHtml)return h;
+  toonPop(esc(r.naam||"Soort"),h);
+  const m=document.querySelector("#mobPop .mpop");if(m)m.style.maxWidth="900px";try{fotoVul()}catch(e){}}
+function srtNotitie(id,v){const r=data.rassen.find(x=>x.id===id);if(!r)return;v=String(v||"").trim();if(v)r.notitie=v;else delete r.notitie;opslaanLater();melding(v?"📝 Notitie bewaard":"Notitie weggehaald","#2d6a4f")}
 /* Afleverplanning: klik op een soort = klein menu met 3 keuzes */
+/* 1 klik op een soort: Afleverplanning (links) en Soortgegevens met notitie (rechts) samen in één venster */
+async function soortAlles(k,rid){srtMenuDicht();const[pr,so]=String(k).split(" · "),r=(rid&&data.rassen.find(x=>x.id===rid))||vkRasVan(pr+"|"+so);
+  let afl=soortPop(k,true),info=r?await soortInfo(r.id,true):`<p class="status">Deze soort staat niet in Parameters.</p>`,rechts="";
+  /* knoppen + notitie naar de linkerkant (onder de afleverplanning): daar is ruimte */
+  const i=info.indexOf('<div class="srtrechts">');if(i>=0){rechts=info.slice(i,info.lastIndexOf("</div>"));info=info.slice(0,i)+"</div>"}
+  toonPop(esc(so||k),`<div class="srtalles"><div class="srtA"><div class="srtkop">Afleverplanning <span class="status">· plan, gereserveerd, nog beschikbaar</span></div>${afl}
+      <p class="status" style="font-size:12px;margin:6px 0 0">Klik op een week om te reserveren.</p>${r&&!kijker&&!KLANT.code?`<button class="btn klein" style="margin-top:8px" onclick="am=null;aanbMailPop('${r.id}')">✉ Aanbieding mailen</button>`:""}${rechts?`<div style="margin-top:14px">${rechts}</div>`:""}</div>
+    <div class="srtB"><div class="srtkop">Soortgegevens</div>${info}</div></div>`);
+  const m=document.querySelector("#mobPop .mpop");if(m){m.style.maxWidth="96vw";m.style.width="1320px"}try{fotoVul()}catch(e){}}
 function soortMenuId(e,id){const r=data.rassen.find(x=>x.id===id);if(!r)return;const t=data.teeltduren.find(x=>x.id===r.teeltId)||{};
   soortMenu(e,(t.product||"")+(t.potmaat?" "+t.potmaat+" cm":"")+" · "+r.naam,id)}
-function soortMenu(e,k,rid){e.preventDefault();srtMenuDicht();const[pr,so]=String(k).split(" · "),r=(rid&&data.rassen.find(x=>x.id===rid))||vkRasVan(pr+"|"+so),m=document.createElement("div");m.className="srtmenu";
+function soortMenu(e,k,rid){e.preventDefault();soortAlles(k,rid);return;srtMenuDicht();const[pr,so]=String(k).split(" · "),r=(rid&&data.rassen.find(x=>x.id===rid))||vkRasVan(pr+"|"+so),m=document.createElement("div");m.className="srtmenu";
   const it=(ic,t,sub,f)=>`<button type="button" onclick="srtMenuDicht();${f}"><span><b>${t}</b><small>${sub}</small></span></button>`,q=esc(JSON.stringify(k));
   m.innerHTML=`<div class="srtmkop">${esc(so||k)}</div>`+it("📊","Afleverplanning","plan, gereserveerd, nog beschikbaar",`soortPop(${q})`)
     +(r?it("ℹ","Soortgegevens","instellingen uit Parameters",`soortInfo('${r.id}')`):"")
@@ -4874,7 +4891,7 @@ function toonAflever(){syncSoorten();
 function aflKlik(td){const k=td.dataset.k,t=+td.dataset.w;raapPop(k,t,aflDetail[k+"|"+t]||[])}
 
 /* Afleverplanning: klik op een soort → alle weken van deze soort */
-function soortPop(ks){const[pr,so]=ks.split(" · "),k=pr+"|"+so,nu=+dezeWeek(),per=new Map();
+function soortPop(ks,alleenHtml){const[pr,so]=ks.split(" · "),k=pr+"|"+so,nu=+dezeWeek(),per=new Map();
   for(const r of afleverRegels()){if(r.product!==pr||r.soort!==so||!(r.aantal>0))continue;per.set(r.t,(per.get(r.t)||0)+r.aantal)}
   for(const key of Object.keys(data.verkoop||{})){if(!key.startsWith(k+"|"))continue;const cd=key.split("|").pop(),t=+maandagIso(2000+ +cd.slice(0,2),+cd.slice(2));if(!per.has(t))per.set(t,0)}
   /* 1 week terug (grijs) t/m een half jaar (26 weken) vooruit */
@@ -4883,6 +4900,7 @@ function soortPop(ks){const[pr,so]=ks.split(" · "),k=pr+"|"+so,nu=+dezeWeek(),p
   const h=rijen.length?`<table class="kvtab"><tr><th>Week</th><th>Afleverplan</th><th>Gereserveerd</th><th>Nog beschikbaar</th></tr>${rijen.map(([t,a])=>{const v=verkSom(k,t),b=a-v;sP+=a;sV+=v;
       return`<tr class="${t<nu?"oud":""} ${b<0?"stover":a>0&&v>0&&b<a*0.1?"stkrap":""}" style="cursor:pointer" onclick="sluitMobSoort();aflKlik({dataset:{k:'${esc(k).replace(/'/g,"\\'")}',w:${t}}})" title="Klik: reserveren in deze week"><td>${wkCode(t)}</td><td>${a?getal(a):"–"}</td><td>${v?getal(v):"–"}</td><td><b>${getal(b)}</b></td></tr>`}).join("")}
       <tr class="tot"><td>Totaal</td><td>${getal(sP)}</td><td>${getal(sV)}</td><td>${getal(sP-sV)}</td></tr></table>`:`<p class="status">Geen afleveringen of reserveringen gevonden.</p>`;
+  if(alleenHtml)return h;
   toonPop(esc(pr)+" · "+esc(so),`${h}<div class="rij" style="margin-top:10px"><span class="status">Klik op een week om te reserveren.</span><span style="flex:1"></span>${ras?`<button class="btn klein" onclick="am=null;aanbMailPop('${ras.id}')">✉ Aanbieding mailen</button> <button class="btn licht klein" onclick="sluitMobSoort();naarSoort('${ras.id}')">Naar parameters ›</button>`:""}</div>`);
   const m=document.querySelector("#mobPop .mpop");if(m){m.style.maxWidth="620px";m.style.width="auto"}}
 
